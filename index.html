@@ -77,6 +77,31 @@
             width: 80%;
         }
         .cta-button:hover { background-color: #f1c40f; transform: scale(1.05); }
+        /* EFEITO ESQUELETO (LOADING) */
+        .skeleton {
+            background: #1a1a1a;
+            background: linear-gradient(110deg, #1a1a1a 8%, #252525 18%, #1a1a1a 33%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 10px;
+        }
+
+        @keyframes shimmer {
+            to { background-position-x: -200%; }
+        }
+
+        .skeleton-card {
+            height: 350px; /* Mesma altura aproximada do card real */
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .skeleton-img { width: 100%; height: 220px; border-radius: 12px 12px 0 0; }
+        .skeleton-title { width: 60%; height: 20px; margin: 20px; }
+        .skeleton-text { width: 80%; height: 15px; margin: 0 20px 20px 20px; }
     </style>
 </head>
 <body>
@@ -103,24 +128,56 @@
     </div>
 
 <script>
-    // LISTA ATUALIZADA: Apenas os dois vídeos principais
-    const curiosidades = [
-        {
-            titulo: "O Som de um Buraco Negro",
-            descricao: "Em 2022, a NASA revelou ondas sonoras reais vindo de um buraco negro no aglomerado de Perseus. É uma nota musical traduzida para que nossos ouvidos percebam esse eco fantasmagórico do abismo espacial.",
-            imagem: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=800&q=80",
-            link: "https://www.instagram.com/p/DTDV56qDroH/" 
-        },
-        {
-            titulo: "A Maldição de Ötzi",
-            descricao: "Encontrado congelado nos Alpes após 5.000 anos, o 'Homem do Gelo' é um dos achados mais preservados da história. Mas por trás da ciência, existe uma lenda de mortes misteriosas entre aqueles que o encontraram.",
-            imagem: "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=800&q=80",
-            link: "#" // Amanhã você substitui o # pelo link do novo vídeo
-        }
-    ];
+    // 1. COLE AQUI O LINK QUE VOCÊ COPIOU (Publicar na Web como CSV)
+    const LINK_PLANILHA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl1-wYcxtyN6KvFglIguVBI4dBQ9emszEUu89piHclhQWju4xmdD8cfkvDF4f88TM45mBL3EKxH28X/pub?gid=0&single=true&output=csv';
+
+    // Lista que será preenchida pelos dados da planilha
+    let curiosidades = [];
+
+    // Função para buscar os dados da Planilha
+    async function carregarDadosDaPlanilha() {
+    try {
+        const resposta = await fetch(LINK_PLANILHA);
+        const dadosBrutos = await resposta.text();
+        
+        // Divide o arquivo em linhas
+        const linhas = dadosBrutos.split(/\r?\n/).filter(linha => linha.trim() !== "");
+        const dadosSemCabecalho = linhas.slice(1);
+
+        curiosidades = dadosSemCabecalho.map(linha => {
+            /* A mágica aqui: 
+               Este comando separa por vírgula, mas garante que se o texto 
+               estiver entre aspas (como o Google faz com textos longos), 
+               ele não quebre o título ou a descrição.
+            */
+            const colunas = linha.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+            if (colunas && colunas.length >= 4) {
+                return {
+                    titulo: colunas[0].replace(/^"|"$/g, ''),      // Limpa aspas do início/fim
+                    descricao: colunas[1].replace(/^"|"$/g, ''),   // Limpa aspas do início/fim
+                    imagem: colunas[2].replace(/^"|"$/g, '').trim(),
+                    link: colunas[3].replace(/^"|"$/g, '').trim()
+                };
+            }
+            return null;
+        }).filter(item => item !== null);
+
+        renderizarMuseu();
+    } catch (erro) {
+        console.error("Erro ao carregar dados:", erro);
+        const vitrine = document.getElementById('vitrine');
+        vitrine.innerHTML = "<p style='color: white;'>Erro ao conectar com a planilha. Verifique o link.</p>";
+    }
+}   
 
     function renderizarMuseu() {
         const vitrine = document.getElementById('vitrine');
+        if (curiosidades.length === 0) {
+            vitrine.innerHTML = "<p style='color: white; text-align: center; width: 100%;'>Carregando mistérios...</p>";
+            return;
+        }
+
         vitrine.innerHTML = curiosidades.map((item, index) => `
             <div class="card" onclick="abrirModal(${index})">
                 <div class="img-container">
@@ -128,7 +185,7 @@
                 </div>
                 <div class="card-content">
                     <h3>${item.titulo}</h3>
-                    <p>${item.descricao.substring(0, 80)}...</p>
+                    <p>${item.descricao ? item.descricao.substring(0, 80) : ''}...</p>
                 </div>
             </div>
         `).join('');
@@ -141,13 +198,14 @@
         document.getElementById('modalDescricao').innerText = item.descricao;
         document.getElementById('modalLink').href = item.link;
         
-        // Se o link for apenas "#", mudamos o texto do botão
-        if(item.link === "#") {
+        if(!item.link || item.link === "#" || item.link.includes("Amanhã")) {
             document.getElementById('modalLink').innerText = "Disponível Amanhã";
-            document.getElementById('modalLink').style.opacity = "0.6";
+            document.getElementById('modalLink').style.opacity = "0.5";
+            document.getElementById('modalLink').style.pointerEvents = "none";
         } else {
             document.getElementById('modalLink').innerText = "Ver Vídeo Completo";
             document.getElementById('modalLink').style.opacity = "1";
+            document.getElementById('modalLink').style.pointerEvents = "auto";
         }
 
         document.getElementById('meuModal').style.display = "flex";
@@ -161,7 +219,49 @@
         if (event.target == document.getElementById('meuModal')) fecharModal();
     }
 
-    renderizarMuseu();
+    // Inicia o processo carregando a planilha primeiro
+    carregarDadosDaPlanilha();
+
+    // Função que mostra os cards "vazios" piscando
+function mostrarEsqueletos() {
+    const vitrine = document.getElementById('vitrine');
+    // Criamos 2 cards de esqueleto (ou quantos você quiser)
+    const esqueletos = `
+        <div class="skeleton-card">
+            <div class="skeleton-img skeleton"></div>
+            <div class="skeleton-title skeleton"></div>
+            <div class="skeleton-text skeleton"></div>
+        </div>
+    `.repeat(2); 
+    
+    vitrine.innerHTML = esqueletos;
+}
+
+// MODIFIQUE O FINAL DO SEU SCRIPT PARA ISSO:
+
+// 1. Antes de tudo, mostra os esqueletos
+mostrarEsqueletos();
+
+// 2. Depois de 500ms (para dar tempo do usuário ver o efeito) ou imediatamente, carrega a planilha
+setTimeout(() => {
+    carregarDadosDaPlanilha();
+}, 800);
+
 </script>
+
+<section id="sobre" style="padding: 60px 20px; text-align: center; background: #0f0f0f; width: 100%;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="color: #d4af37; text-transform: uppercase; letter-spacing: 2px;">O Curador</h2>
+        <p style="color: #888; line-height: 1.6; font-size: 1.1rem;">
+            Explorador do desconhecido e entusiasta da história. O Ecos do Tempo nasceu da vontade de resgatar memórias esquecidas e compartilhar os mistérios que moldaram nosso mundo.
+        </p>
+    </div>
+</section>
+
+<footer style="padding: 40px 20px; width: 100%; border-top: 1px solid #333; text-align: center; color: #555; font-size: 0.8rem;">
+    <p>&copy; 2026 Ecos do Tempo. Todos os direitos reservados.</p>
+    <p>Desenvolvido com paixão pela história.</p>
+</footer>
+
 </body>
 </html>
