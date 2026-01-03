@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecos do Tempo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* CONFIGURAÇÕES GERAIS */
+        body { background-color: #0a0a0a; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        /* HEADER E LINKS SOCIAIS */
+        header { padding: 60px 20px 20px 20px; text-align: center; position: relative; width: 100%; }
+        h1 { letter-spacing: 4px; text-transform: uppercase; color: #d4af37; margin-bottom: 5px; }
+        .subtitle { color: #888; font-style: italic; margin-bottom: 20px; }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .social-link:hover { background: #d4af37; color: #000; }
+        .social-link i { margin-right: 8px; }
+
+        /* GRID DE CARDS */
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1200px; padding: 40px 0; }
+        
+        /* CARD COM EFEITO ZOOM */
+        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; transition: 0.4s; cursor: pointer; }
+        .card:hover { border-color: #d4af37; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .img-container { width: 100%; height: 220px; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.6s ease; }
+        .card:hover .card-img { transform: scale(1.1); }
+
+        .card-content { padding: 20px; }
+        .card-content h3 { margin: 0 0 10px 0; color: #d4af37; }
+        .card-content p { font-size: 0.9em; color: #bbb; }
+
+        /* MODAL E BOTÃO CTA */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.95); backdrop-filter: blur(8px); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #161616; padding: 40px; border-radius: 20px; border: 1px solid #333;
+            max-width: 500px; width: 85%; text-align: center; position: relative;
+        }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 25px; color: #555; cursor: pointer; }
+        .modal-img { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
+        
+        /* ESTILO DO BOTÃO CTA */
+        .cta-button {
+            display: inline-block;
+            margin-top: 25px;
+            background-color: #d4af37;
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            width: 80%;
+        }
+        .cta-button:hover { background-color: #f1c40f; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Ecos do Tempo</h1>
+        <p class="subtitle">A biblioteca digital do conhecimento esquecido.</p>
+        
+        <a href="https://instagram.com/ecosdotempo_br" target="_blank" class="social-link">
+            <i class="fab fa-instagram"></i> @ecosdotempo_br
+        </a>
+    </header>
+
+    <div class="container" id="vitrine"></div>
+
+    <div id="meuModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal()">&times;</span>
+            <img id="modalImg" class="modal-img" src="" alt="">
+            <h2 id="modalTitulo" style="color: #d4af37; margin-bottom: 10px;"></h2>
+            <p id="modalDescricao" style="color: #ccc; font-size: 0.95rem; line-height: 1.6;"></p>
+            
+            <a id="modalLink" href="#" target="_blank" class="cta-button">Ver Vídeo Completo</a>
+        </div>
+    </div>
+
+<script>
+    // LISTA ATUALIZADA: Apenas os dois vídeos principais
+    const curiosidades = [
+        {
+            titulo: "O Som de um Buraco Negro",
+            descricao: "Em 2022, a NASA revelou ondas sonoras reais vindo de um buraco negro no aglomerado de Perseus. É uma nota musical traduzida para que nossos ouvidos percebam esse eco fantasmagórico do abismo espacial.",
+            imagem: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=800&q=80",
+            link: "https://www.instagram.com/p/DTDV56qDroH/" 
+        },
+        {
+            titulo: "A Maldição de Ötzi",
+            descricao: "Encontrado congelado nos Alpes após 5.000 anos, o 'Homem do Gelo' é um dos achados mais preservados da história. Mas por trás da ciência, existe uma lenda de mortes misteriosas entre aqueles que o encontraram.",
+            imagem: "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=800&q=80",
+            link: "#" // Amanhã você substitui o # pelo link do novo vídeo
+        }
+    ];
+
+    function renderizarMuseu() {
+        const vitrine = document.getElementById('vitrine');
+        vitrine.innerHTML = curiosidades.map((item, index) => `
+            <div class="card" onclick="abrirModal(${index})">
+                <div class="img-container">
+                    <div class="card-img" style="background-image: url('${item.imagem}')"></div>
+                </div>
+                <div class="card-content">
+                    <h3>${item.titulo}</h3>
+                    <p>${item.descricao.substring(0, 80)}...</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function abrirModal(index) {
+        const item = curiosidades[index];
+        document.getElementById('modalImg').src = item.imagem;
+        document.getElementById('modalTitulo').innerText = item.titulo;
+        document.getElementById('modalDescricao').innerText = item.descricao;
+        document.getElementById('modalLink').href = item.link;
+        
+        // Se o link for apenas "#", mudamos o texto do botão
+        if(item.link === "#") {
+            document.getElementById('modalLink').innerText = "Disponível Amanhã";
+            document.getElementById('modalLink').style.opacity = "0.6";
+        } else {
+            document.getElementById('modalLink').innerText = "Ver Vídeo Completo";
+            document.getElementById('modalLink').style.opacity = "1";
+        }
+
+        document.getElementById('meuModal').style.display = "flex";
+    }
+
+    function fecharModal() {
+        document.getElementById('meuModal').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('meuModal')) fecharModal();
+    }
+
+    renderizarMuseu();
+</script>
+</body>
+</html>
