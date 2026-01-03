@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#0a0a0a"/>
+  
+  <g transform="translate(250, 230)">
+    
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#d4af37" stroke-width="5" opacity="0.8"/>
+    <path d="M-80 -80 A 113 113 0 0 1 80 80" fill="none" stroke="#d4af37" stroke-width="3" opacity="0.5" transform="rotate(45)"/>
+    <path d="M-80 -80 A 113 113 0 0 1 80 80" fill="none" stroke="#d4af37" stroke-width="3" opacity="0.5" transform="rotate(135)"/>
+    
+    <path d="M-40 -60 L 40 -60 L 0 0 L 40 60 L -40 60 L 0 0 Z" fill="#d4af37"/>
+
+    <text x="0" y="160" font-family="'Segoe UI', sans-serif" font-size="48" font-weight="bold" fill="#d4af37" text-anchor="middle" letter-spacing="4px" text-transform="uppercase">ECOS DO TEMPO</text>
+    <text x="0" y="200" font-family="'Segoe UI', sans-serif" font-size="24" fill="#d4af37" text-anchor="middle" letter-spacing="2px" opacity="0.7">@ecosdotempo_br</text>
+  </g>
+</svg>
