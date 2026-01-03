@@ -10,10 +10,15 @@
         /* CONFIGURAÇÕES GERAIS */
         body { background-color: #0a0a0a; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
         
-        /* HEADER E LINKS SOCIAIS */
-        header { padding: 60px 20px 20px 20px; text-align: center; position: relative; width: 100%; }
-        h1 { letter-spacing: 4px; text-transform: uppercase; color: #d4af37; margin-bottom: 5px; }
-        .subtitle { color: #888; font-style: italic; margin-bottom: 20px; }
+       /* HEADER COM LOGO IMAGEM - NOVO */
+        header { padding: 40px 20px 20px 20px; text-align: center; position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+        /* Controla o tamanho do logo no site */
+        .header-logo {
+            width: 250px; /* Ajuste este valor se quiser maior ou menor */
+             height: auto;
+             margin-bottom: 20px;
+        }
         
         .social-link {
             display: inline-flex;
@@ -77,11 +82,10 @@
 <body>
 
     <header>
-        <h1>Ecos do Tempo</h1>
-        <p class="subtitle">A biblioteca digital do conhecimento esquecido.</p>
-        
+        <img src="logo-ecos.png" alt="Logo Ecos do Tempo" class="header-logo">
+    
         <a href="https://instagram.com/ecosdotempo_br" target="_blank" class="social-link">
-            <i class="fab fa-instagram"></i> @ecosdotempo_br
+             <i class="fab fa-instagram"></i> @ecosdotempo_br
         </a>
     </header>
 
