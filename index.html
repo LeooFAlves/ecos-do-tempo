@@ -3,271 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecos do Tempo</title>
+    <title>Ecos do Tempo | Museu Digital</title>
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CONFIGURAÇÕES GERAIS */
+        :root { --primary-color: #d4af37; }
         body { background-color: #0a0a0a; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
         
-       /* HEADER COM LOGO IMAGEM - NOVO */
-        header { padding: 40px 20px 20px 20px; text-align: center; position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; }
-
-        /* Controla o tamanho do logo no site */
-        .header-logo {
-            width: 250px; /* Ajuste este valor se quiser maior ou menor */
-             height: auto;
-             margin-bottom: 20px;
-        }
+        header { padding: 40px 20px; text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid #1a1a1a; }
+        .header-logo { width: 220px; height: auto; margin: 20px 0; }
         
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            color: #d4af37;
-            border: 1px solid #d4af37;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .social-link:hover { background: #d4af37; color: #000; }
-        .social-link i { margin-right: 8px; }
+        .search-container { width: 90%; max-width: 600px; margin-bottom: 20px; }
+        #inputBusca { width: 100%; padding: 15px; background: #161616; border: 1px solid #333; border-radius: 10px; color: white; outline: none; transition: 0.3s; }
+        #inputBusca:focus { border-color: var(--primary-color); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
 
-        /* GRID DE CARDS */
+        .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-btn { background: #161616; color: #888; border: 1px solid #333; padding: 8px 18px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary-color); color: #000; border-color: var(--primary-color); }
+
         .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1200px; padding: 40px 0; }
-        
-        /* CARD COM EFEITO ZOOM */
-        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; transition: 0.4s; cursor: pointer; }
-        .card:hover { border-color: #d4af37; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .img-container { width: 100%; height: 220px; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.6s ease; }
-        .card:hover .card-img { transform: scale(1.1); }
-
+        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; transition: 0.4s; cursor: pointer; position: relative; }
+        .card:hover { border-color: var(--primary-color); transform: translateY(-5px); }
+        .img-container { width: 100%; height: 220px; overflow: hidden; background: #111; }
+        .card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.6s; }
         .card-content { padding: 20px; }
-        .card-content h3 { margin: 0 0 10px 0; color: #d4af37; }
-        .card-content p { font-size: 0.9em; color: #bbb; }
+        .card-content h3 { margin: 0 0 10px 0; font-size: 1.2rem; transition: 0.3s; }
+        .card-category { font-size: 0.7rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* MODAL E BOTÃO CTA */
-        .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.95); backdrop-filter: blur(8px); justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: #161616; padding: 40px; border-radius: 20px; border: 1px solid #333;
-            max-width: 500px; width: 85%; text-align: center; position: relative;
-        }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 25px; color: #555; cursor: pointer; }
-        .modal-img { width: 100%; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; }
+        .modal-content { background: #161616; padding: 30px; border-radius: 20px; border: 1px solid #333; max-width: 450px; width: 90%; text-align: center; position: relative; }
+        .modal-img { width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #222; max-height: 250px; object-fit: cover; }
         
-        /* ESTILO DO BOTÃO CTA */
-        .cta-button {
-            display: inline-block;
-            margin-top: 25px;
-            background-color: #d4af37;
-            color: #000;
-            padding: 12px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .cta-button { display: block; margin-top: 15px; background: var(--primary-color); color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-transform: uppercase; transition: 0.3s; border: none; width: 100%; cursor: pointer; }
+        .cta-button:hover { transform: scale(1.02); opacity: 0.9; }
+
+        .newsletter-section { background: #111; padding: 60px 20px; width: 100%; text-align: center; border-top: 1px solid #333; }
+        .newsletter-form { display: flex; gap: 10px; margin: 20px auto; max-width: 500px; }
+        .newsletter-form input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #000; color: white; outline: none; }
+
+        .skeleton { background: linear-gradient(110deg, #1a1a1a 8%, #252525 18%, #1a1a1a 33%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
+        @keyframes shimmer { to { background-position-x: -200%; } }
+
+        .social-link { 
+            display: inline-flex; 
+            align-items: center; 
+            text-decoration: none; 
+            color: var(--primary-color); 
+            border: 1px solid var(--primary-color); 
+            padding: 10px 20px; 
+            border-radius: 30px; 
+            font-size: 0.9rem; 
             transition: 0.3s;
-            width: 80%;
+            font-weight: bold;
         }
-        .cta-button:hover { background-color: #f1c40f; transform: scale(1.05); }
-        /* EFEITO ESQUELETO (LOADING) */
-        .skeleton {
-            background: #1a1a1a;
-            background: linear-gradient(110deg, #1a1a1a 8%, #252525 18%, #1a1a1a 33%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-            border-radius: 10px;
-        }
-
-        @keyframes shimmer {
-            to { background-position-x: -200%; }
-        }
-
-        .skeleton-card {
-            height: 350px; /* Mesma altura aproximada do card real */
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .skeleton-img { width: 100%; height: 220px; border-radius: 12px 12px 0 0; }
-        .skeleton-title { width: 60%; height: 20px; margin: 20px; }
-        .skeleton-text { width: 80%; height: 15px; margin: 0 20px 20px 20px; }
+        .social-link:hover { background: var(--primary-color); color: #000; transform: scale(1.05); }
+        .social-link i { margin-right: 8px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="logo-ecos.png" alt="Logo Ecos do Tempo" class="header-logo">
-    
-        <a href="https://instagram.com/ecosdotempo_br" target="_blank" class="social-link">
-             <i class="fab fa-instagram"></i> @ecosdotempo_br
-        </a>
-    </header>
+        <header>
+            <img src="logo-ecos.png" alt="Logo" class="header-logo">
+            <div class="search-container">
+                <input type="text" id="inputBusca" placeholder="Pesquisar mistérios (ex: Egito, Espaço...)" oninput="filtrarMuseu()">
+            </div>
+            <div class="filter-container" id="filtros">
+                <button class="filter-btn active" onclick="setCategoria('Todos', this)">Todos</button>
+            </div>
+            <a href="https://instagram.com/ecosdotempo_br" target="_blank" class="social-link">
+                <i class="fab fa-instagram"></i> @ecosdotempo_br
+            </a>
+        </header>
 
     <div class="container" id="vitrine"></div>
 
     <div id="meuModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal()">&times;</span>
+            <span style="position:absolute; top:10px; right:20px; cursor:pointer; font-size:24px; color:#555;" onclick="fecharModal()">&times;</span>
             <img id="modalImg" class="modal-img" src="" alt="">
-            <h2 id="modalTitulo" style="color: #d4af37; margin-bottom: 10px;"></h2>
-            <p id="modalDescricao" style="color: #ccc; font-size: 0.95rem; line-height: 1.6;"></p>
-            
+            <h2 id="modalTitulo"></h2>
+            <p id="modalDescricao" style="color:#bbb; font-size:0.9rem; line-height:1.5;"></p>
             <a id="modalLink" href="#" target="_blank" class="cta-button">Ver Vídeo Completo</a>
+            <a id="btnWhatsapp" href="#" target="_blank" class="cta-button" style="background:#25d366; color:white;">
+                <i class="fab fa-whatsapp"></i> Compartilhar no Zap
+            </a>
         </div>
     </div>
 
+    <section class="newsletter-section">
+        <div class="newsletter-container">
+            <h2>🛡️ Entre para a Ordem</h2>
+            <p style="color: #888;">Receba mistérios exclusivos diretamente no seu e-mail.</p>
+            <form class="newsletter-form" id="formNewsletter">
+                <input type="email" id="emailLead" placeholder="Seu melhor e-mail" required>
+                <button type="submit" id="btnEnviar" class="cta-button" style="margin:0; width:auto;">Assinar</button>
+            </form>
+            <p id="msgSucesso" style="display:none; color: var(--primary-color); margin-top: 15px; font-weight:bold;">Bem-vindo à Ordem!</p>
+        </div>
+    </section>
+
+    <footer style="padding: 40px 20px; text-align: center; border-top: 1px solid #333; color: #555; font-size: 0.8rem; width:100%;">
+        <p>&copy; 2026 Ecos do Tempo. <a href="login.html" style="color:#333; text-decoration:none;">[Admin]</a></p>
+    </footer>
+
 <script>
-    // 1. COLE AQUI O LINK QUE VOCÊ COPIOU (Publicar na Web como CSV)
     const LINK_PLANILHA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl1-wYcxtyN6KvFglIguVBI4dBQ9emszEUu89piHclhQWju4xmdD8cfkvDF4f88TM45mBL3EKxH28X/pub?gid=0&single=true&output=csv';
-
-    // Lista que será preenchida pelos dados da planilha
+    const SCRIPT_URL_NEWSLETTER = 'https://script.google.com/macros/s/AKfycbyn-ZS5SVIfo5DA68jQ-uwNvx4ZdYdup5LZe7Z7q-c1rTs5I80WRUnZgtHusypxig7WKQ/exec';
+    
     let curiosidades = [];
+    let categoriaAtiva = "Todos";
 
-    // Função para buscar os dados da Planilha
     async function carregarDadosDaPlanilha() {
-    try {
-        const resposta = await fetch(LINK_PLANILHA);
-        const dadosBrutos = await resposta.text();
-        
-        // Divide o arquivo em linhas
-        const linhas = dadosBrutos.split(/\r?\n/).filter(linha => linha.trim() !== "");
-        const dadosSemCabecalho = linhas.slice(1);
+        try {
+            const res = await fetch(LINK_PLANILHA + "&t=" + new Date().getTime());
+            const texto = await res.text();
+            const linhas = texto.split(/\r?\n/).filter(l => l.trim() !== "").slice(1);
 
-        curiosidades = dadosSemCabecalho.map(linha => {
-            /* A mágica aqui: 
-               Este comando separa por vírgula, mas garante que se o texto 
-               estiver entre aspas (como o Google faz com textos longos), 
-               ele não quebre o título ou a descrição.
-            */
-            const colunas = linha.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            curiosidades = linhas.map(linha => {
+                let col = linha.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if (col.length < 5) col = linha.split(/;(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if (col.length >= 4) {
+                    return {
+                        titulo: col[0].replace(/^"|"$/g, '').trim(),
+                        descricao: col[1].replace(/^"|"$/g, '').trim(),
+                        imagem: col[2].replace(/^"|"$/g, '').trim(),
+                        link: col[3].replace(/^"|"$/g, '').trim(),
+                        categoria: col[4] ? col[4].replace(/^"|"$/g, '').trim() : "Geral"
+                    };
+                }
+                return null;
+            }).filter(i => i !== null);
 
-            if (colunas && colunas.length >= 4) {
-                return {
-                    titulo: colunas[0].replace(/^"|"$/g, ''),      // Limpa aspas do início/fim
-                    descricao: colunas[1].replace(/^"|"$/g, ''),   // Limpa aspas do início/fim
-                    imagem: colunas[2].replace(/^"|"$/g, '').trim(),
-                    link: colunas[3].replace(/^"|"$/g, '').trim()
-                };
-            }
-            return null;
-        }).filter(item => item !== null);
-
-        renderizarMuseu();
-    } catch (erro) {
-        console.error("Erro ao carregar dados:", erro);
-        const vitrine = document.getElementById('vitrine');
-        vitrine.innerHTML = "<p style='color: white;'>Erro ao conectar com a planilha. Verifique o link.</p>";
+            gerarBotoesFiltro();
+            renderizarMuseu(curiosidades);
+        } catch (e) { console.error("Erro ao carregar planilha:", e); }
     }
-}   
 
-    function renderizarMuseu() {
-        const vitrine = document.getElementById('vitrine');
-        if (curiosidades.length === 0) {
-            vitrine.innerHTML = "<p style='color: white; text-align: center; width: 100%;'>Carregando mistérios...</p>";
-            return;
-        }
+    function gerarBotoesFiltro() {
+        const container = document.getElementById('filtros');
+        const categoriasUnicas = [...new Set(curiosidades.map(c => c.categoria))];
+        categoriasUnicas.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.innerText = cat;
+            btn.onclick = (e) => setCategoria(cat, e.target);
+            container.appendChild(btn);
+        });
+    }
 
-        vitrine.innerHTML = curiosidades.map((item, index) => `
-            <div class="card" onclick="abrirModal(${index})">
-                <div class="img-container">
-                    <div class="card-img" style="background-image: url('${item.imagem}')"></div>
-                </div>
-                <div class="card-content">
-                    <h3>${item.titulo}</h3>
-                    <p>${item.descricao ? item.descricao.substring(0, 80) : ''}...</p>
-                </div>
-            </div>
-        `).join('');
+    function setCategoria(cat, elemento) {
+        categoriaAtiva = cat;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        elemento.classList.add('active');
+        filtrarMuseu();
+    }
+
+    function filtrarMuseu() {
+        const termo = document.getElementById('inputBusca').value.toLowerCase();
+        const filtrados = curiosidades.filter(item => {
+            const matchesBusca = item.titulo.toLowerCase().includes(termo) || item.descricao.toLowerCase().includes(termo);
+            const matchesCat = categoriaAtiva === "Todos" || item.categoria === categoriaAtiva;
+            return matchesBusca && matchesCat;
+        });
+        renderizarMuseu(filtrados);
+    }
+
+    function renderizarMuseu(lista) {
+        const v = document.getElementById('vitrine');
+        if (lista.length === 0) { v.innerHTML = "<p style='color:#555;'>Nenhum mistério encontrado...</p>"; return; }
+        v.innerHTML = lista.map((item) => {
+            const originalIdx = curiosidades.indexOf(item);
+            return `
+                <div class="card" onclick="abrirModal(${originalIdx})">
+                    <div class="img-container"><div class="card-img" style="background-image: url('${item.imagem}')"></div></div>
+                    <div class="card-content">
+                        <h3 style="color:var(--primary-color)">${item.titulo}</h3>
+                        <p style="font-size:0.9rem; color:#aaa;">${item.descricao.substring(0, 80)}...</p>
+                        <span class="card-category">${item.categoria}</span>
+                    </div>
+                </div>`;
+        }).join('');
     }
 
     function abrirModal(index) {
         const item = curiosidades[index];
-        document.getElementById('modalImg').src = item.imagem;
+        const mImg = document.getElementById('modalImg');
+        mImg.src = item.imagem;
+        mImg.onerror = () => { mImg.src = 'https://via.placeholder.com/400x250/111/d4af37?text=Imagem+Indisponível'; };
         document.getElementById('modalTitulo').innerText = item.titulo;
         document.getElementById('modalDescricao').innerText = item.descricao;
-        document.getElementById('modalLink').href = item.link;
         
-        if(!item.link || item.link === "#" || item.link.includes("Amanhã")) {
-            document.getElementById('modalLink').innerText = "Disponível Amanhã";
-            document.getElementById('modalLink').style.opacity = "0.5";
-            document.getElementById('modalLink').style.pointerEvents = "none";
-        } else {
-            document.getElementById('modalLink').innerText = "Ver Vídeo Completo";
-            document.getElementById('modalLink').style.opacity = "1";
-            document.getElementById('modalLink').style.pointerEvents = "auto";
-        }
+        const mLink = document.getElementById('modalLink');
+        mLink.href = item.link;
+        const indisponivel = !item.link || item.link === "#" || item.link.includes("Amanhã");
+        mLink.innerText = indisponivel ? "Disponível Amanhã" : "Ver Vídeo Completo";
+        mLink.style.opacity = indisponivel ? "0.5" : "1";
+        mLink.style.pointerEvents = indisponivel ? "none" : "auto";
 
+        const textoZap = encodeURIComponent(`Olha que interessante: *${item.titulo}*\n\nVeja aqui: ${window.location.href}`);
+        document.getElementById('btnWhatsapp').href = `https://api.whatsapp.com/send?text=${textoZap}`;
         document.getElementById('meuModal').style.display = "flex";
     }
 
-    function fecharModal() {
-        document.getElementById('meuModal').style.display = "none";
+    function fecharModal() { document.getElementById('meuModal').style.display = "none"; }
+    window.onclick = (e) => { if(e.target.classList.contains('modal')) fecharModal(); };
+
+    // NEWSLETTER
+    document.getElementById('formNewsletter').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnEnviar');
+        const email = document.getElementById('emailLead').value;
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+        try {
+            await fetch(SCRIPT_URL_NEWSLETTER + "?email=" + encodeURIComponent(email), { method: 'POST', mode: 'no-cors' });
+            document.getElementById('formNewsletter').style.display = 'none';
+            document.getElementById('msgSucesso').style.display = 'block';
+        } catch (error) {
+            console.error('Erro!', error);
+            btn.innerText = "Assinar"; btn.disabled = false;
+        }
+    });
+
+    function aplicarTema() {
+        const cor = localStorage.getItem("temaCor") || "#d4af37";
+        document.documentElement.style.setProperty('--primary-color', cor);
     }
 
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('meuModal')) fecharModal();
-    }
-
-    // Inicia o processo carregando a planilha primeiro
-    carregarDadosDaPlanilha();
-
-    // Função que mostra os cards "vazios" piscando
-function mostrarEsqueletos() {
-    const vitrine = document.getElementById('vitrine');
-    // Criamos 2 cards de esqueleto (ou quantos você quiser)
-    const esqueletos = `
-        <div class="skeleton-card">
-            <div class="skeleton-img skeleton"></div>
-            <div class="skeleton-title skeleton"></div>
-            <div class="skeleton-text skeleton"></div>
-        </div>
-    `.repeat(2); 
-    
-    vitrine.innerHTML = esqueletos;
-}
-
-// MODIFIQUE O FINAL DO SEU SCRIPT PARA ISSO:
-
-// 1. Antes de tudo, mostra os esqueletos
-mostrarEsqueletos();
-
-// 2. Depois de 500ms (para dar tempo do usuário ver o efeito) ou imediatamente, carrega a planilha
-setTimeout(() => {
-    carregarDadosDaPlanilha();
-}, 800);
-
+    aplicarTema();
+    setTimeout(carregarDadosDaPlanilha, 500);
 </script>
-
-<section id="sobre" style="padding: 60px 20px; text-align: center; background: #0f0f0f; width: 100%;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="color: #d4af37; text-transform: uppercase; letter-spacing: 2px;">O Curador</h2>
-        <p style="color: #888; line-height: 1.6; font-size: 1.1rem;">
-            Explorador do desconhecido e entusiasta da história. O Ecos do Tempo nasceu da vontade de resgatar memórias esquecidas e compartilhar os mistérios que moldaram nosso mundo.
-        </p>
-    </div>
-</section>
-
-<footer style="padding: 40px 20px; width: 100%; border-top: 1px solid #333; text-align: center; color: #555; font-size: 0.8rem;">
-    <p>&copy; 2026 Ecos do Tempo. Todos os direitos reservados.</p>
-    <p>Desenvolvido com paixão pela história.</p>
-
-    <div style="margin-top: 20px;">
-        <a href="login.html" style="text-decoration: none; color: #333; font-size: 0.7rem; border: 1px solid #333; padding: 5px 10px; border-radius: 4px; transition: 0.3s;">
-             <i class="fas fa-lock"></i> Acesso Administrativo
-         </a>
-    </div>
-</footer>
-
 </body>
 </html>
